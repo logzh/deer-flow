@@ -52,7 +52,7 @@ feat*:
           exports:
             info: NGINX_IMAGE_TAG
         - name: build nginx image
-          script: docker build -t $NGINX_IMAGE_TAG . -f docker/nginx/Dockerfile docker/nginx
+          script: docker build -t $NGINX_IMAGE_TAG -f docker/nginx/Dockerfile .
         - name: push nginx image
           script: docker push $NGINX_IMAGE_TAG
 
