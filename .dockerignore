@@ -3,7 +3,9 @@ Dockerfile
 .dockerignore
 .git
 .gitignore
-docker/
+# Exclude docker/ except nginx assets needed by docker/nginx/Dockerfile COPY
+docker/*
+!docker/nginx/
 
 # Python
 __pycache__/
@@ -58,7 +60,6 @@ tests/
 # Backend build only needs backend/
 scripts/
 logs/
-docker/
 skills/
 frontend/.next
 frontend/node_modules
