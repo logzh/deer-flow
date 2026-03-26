@@ -52,7 +52,7 @@ feat*:
           exports:
             info: NGINX_IMAGE_TAG
         - name: build nginx image
-          script: docker build -t $NGINX_IMAGE_TAG . -f docker/nginx/Dockerfile
+          script: docker build -t $NGINX_IMAGE_TAG . -f docker/nginx/Dockerfile docker/nginx
         - name: push nginx image
           script: docker push $NGINX_IMAGE_TAG
 
@@ -61,6 +61,6 @@ feat*:
           exports:
             info: PROVISIONER_IMAGE_TAG
         - name: build provisioner image
-          script: docker build -t $PROVISIONER_IMAGE_TAG . -f docker/provisioner/Dockerfile
+          script: docker build -t $PROVISIONER_IMAGE_TAG -f docker/provisioner/Dockerfile docker/provisioner
         - name: push provisioner image
           script: docker push $PROVISIONER_IMAGE_TAG
