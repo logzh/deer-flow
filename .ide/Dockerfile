@@ -20,6 +20,10 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
 # 安装 ssh 服务，用于支持 VSCode 等客户端通过 Remote-SSH 访问开发环境（也可按需安装其他软件）
 RUN apt-get update && apt-get install -y git wget unzip openssh-server curl ca-certificates gnupg
 
+# 安装 uv（Python 包管理工具）
+ENV UV_INSTALL_DIR="/usr/local/bin"
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # 安装最新 Node.js 稳定版 (LTS 22.x)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y nodejs
