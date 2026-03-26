@@ -8,7 +8,9 @@ $:
 
 feat*:
   push:
-    - stages:
+    - services:
+        - docker
+      stages:
         - name: sync to github
           imports: https://cnb.cool/spencezhang/my-keys/-/blob/main/env.yml
           image: tencentcom/git-sync
@@ -17,3 +19,48 @@ feat*:
             auth_type: https
             username: ${GIT_USERNAME}
             password: ${GIT_ACCESS_TOKEN}
+
+        - name: set frontend docker tag
+          script: echo -n "${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:frontend.${CNB_BRANCH}.${CNB_COMMIT_SHORT}"
+          exports:
+            info: FRONTEND_IMAGE_TAG
+        - name: build frontend image
+          script: docker build -t $FRONTEND_IMAGE_TAG . -f frontend/Dockerfile
+        - name: push frontend image
+          script: docker push $FRONTEND_IMAGE_TAG
+
+        - name: set gateway docker tag
+          script: echo -n "${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:gateway.${CNB_BRANCH}.${CNB_COMMIT_SHORT}"
+          exports:
+            info: GATEWAY_IMAGE_TAG
+        - name: build gateway image
+          script: docker build -t $GATEWAY_IMAGE_TAG . -f gateway/Dockerfile
+        - name: push gateway image
+          script: docker push $GATEWAY_IMAGE_TAG
+
+        - name: set langgraph docker tag
+          script: echo -n "${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:langgraph.${CNB_BRANCH}.${CNB_COMMIT_SHORT}"
+          exports:
+            info: LANGSERVER_IMAGE_TAG
+        - name: build langgraph image
+          script: docker build -t $LANGSERVER_IMAGE_TAG . -f langgraph/Dockerfile
+        - name: push langgraph image
+          script: docker push $LANGSERVER_IMAGE_TAG
+
+        - name: set nginx docker tag
+          script: echo -n "${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:nginx.${CNB_BRANCH}.${CNB_COMMIT_SHORT}"
+          exports:
+            info: NGINX_IMAGE_TAG
+        - name: build nginx image
+          script: docker build -t $NGINX_IMAGE_TAG . -f nginx/Dockerfile
+        - name: push nginx image
+          script: docker push $NGINX_IMAGE_TAG
+
+        - name: set provisioner docker tag
+          script: echo -n "${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:provisioner.${CNB_BRANCH}.${CNB_COMMIT_SHORT}"
+          exports:
+            info: PROVISIONER_IMAGE_TAG
+        - name: build provisioner image
+          script: docker build -t $PROVISIONER_IMAGE_TAG . -f provisioner/Dockerfile
+        - name: push provisioner image
+          script: docker push $PROVISIONER_IMAGE_TAG
