@@ -25,7 +25,7 @@ feat*:
           exports:
             info: FRONTEND_IMAGE_TAG
         - name: build frontend image
-          script: docker build -t $FRONTEND_IMAGE_TAG . -f frontend/Dockerfile
+          script: docker build -t $FRONTEND_IMAGE_TAG . -f frontend/Dockerfile --target prod
         - name: push frontend image
           script: docker push $FRONTEND_IMAGE_TAG
 
@@ -34,7 +34,7 @@ feat*:
           exports:
             info: GATEWAY_IMAGE_TAG
         - name: build gateway image
-          script: docker build -t $GATEWAY_IMAGE_TAG . -f gateway/Dockerfile
+          script: docker build -t $GATEWAY_IMAGE_TAG . -f backend/Dockerfile
         - name: push gateway image
           script: docker push $GATEWAY_IMAGE_TAG
 
@@ -43,7 +43,7 @@ feat*:
           exports:
             info: LANGSERVER_IMAGE_TAG
         - name: build langgraph image
-          script: docker build -t $LANGSERVER_IMAGE_TAG . -f langgraph/Dockerfile
+          script: docker build -t $LANGSERVER_IMAGE_TAG . -f backend/Dockerfile
         - name: push langgraph image
           script: docker push $LANGSERVER_IMAGE_TAG
 
@@ -52,7 +52,7 @@ feat*:
           exports:
             info: NGINX_IMAGE_TAG
         - name: build nginx image
-          script: docker build -t $NGINX_IMAGE_TAG . -f nginx/Dockerfile
+          script: docker build -t $NGINX_IMAGE_TAG . -f docker/nginx/Dockerfile
         - name: push nginx image
           script: docker push $NGINX_IMAGE_TAG
 
@@ -61,6 +61,6 @@ feat*:
           exports:
             info: PROVISIONER_IMAGE_TAG
         - name: build provisioner image
-          script: docker build -t $PROVISIONER_IMAGE_TAG . -f provisioner/Dockerfile
+          script: docker build -t $PROVISIONER_IMAGE_TAG . -f docker/provisioner/Dockerfile
         - name: push provisioner image
           script: docker push $PROVISIONER_IMAGE_TAG
