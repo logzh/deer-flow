@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: main
 
       - name: Configure git identity
         run: |
@@ -31,11 +32,28 @@ jobs:
             git remote add upstream https://github.com/bytedance/deer-flow.git
           fi
 
-      - name: Fetch upstream main
-        run: git fetch upstream main
+      - name: Sync upstream/main into origin/main
+        run: |
+          set -euo pipefail
 
-      - name: Fast-forward merge upstream/main
-        run: git merge --ff-only upstream/main
+          git fetch upstream main
 
-      - name: Push changes to origin/main
-        run: git push origin main
+          BEFORE_SHA="$(git rev-parse HEAD)"
+          UPSTREAM_REF="upstream/main"
+
+          if git merge-base --is-ancestor HEAD "${UPSTREAM_REF}"; then
+            echo "Fast-forwarding to ${UPSTREAM_REF}..."
+            git merge --ff-only "${UPSTREAM_REF}"
+          elif git merge-base --is-ancestor "${UPSTREAM_REF}" HEAD; then
+            echo "origin/main is already ahead of ${UPSTREAM_REF}; no merge needed."
+          else
+            echo "Branches diverged; creating a merge commit from ${UPSTREAM_REF}..."
+            git merge --no-ff --no-edit "${UPSTREAM_REF}"
+          fi
+
+          AFTER_SHA="$(git rev-parse HEAD)"
+          if [ "${BEFORE_SHA}" = "${AFTER_SHA}" ]; then
+            echo "No updates to push."
+          else
+            git push origin main
+          fi
