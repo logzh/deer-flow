@@ -2,8 +2,8 @@ name: Sync Upstream Repository
 
 on:
   schedule:
-    # GitHub Actions schedule uses UTC. 16:00 UTC = 00:00 (UTC+8) daily.
-    - cron: "0 16 * * *"
+    # Temporary verification cadence: run every 10 minutes.
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
