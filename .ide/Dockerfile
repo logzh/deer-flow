@@ -28,6 +28,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y nodejs
 
+# pnpm（与 frontend/package.json 的 packageManager 一致；Makefile / make install 会调用）
+RUN corepack enable && corepack install -g pnpm@10.26.2
+
 # 安装 Go 1.24
 RUN wget -q https://go.dev/dl/go1.24.0.linux-amd64.tar.gz -O /tmp/go.tar.gz \
   && tar -C /usr/local -xzf /tmp/go.tar.gz \
