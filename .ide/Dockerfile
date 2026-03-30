@@ -14,7 +14,7 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
   && code-server --install-extension ms-python.python \
   && code-server --install-extension golang.go \
   && code-server --install-extension tencent-cloud.coding-copilot \
-  && code-server --install-extension humao.rest-client \
+  && code-server --install-extension eamodio.gitlens \
   && echo done
 
 # 安装 ssh 服务，用于支持 VSCode 等客户端通过 Remote-SSH 访问开发环境（也可按需安装其他软件）
