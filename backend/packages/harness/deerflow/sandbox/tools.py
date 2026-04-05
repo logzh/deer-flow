@@ -366,12 +366,17 @@ def _path_variants(path: str) -> set[str]:
     return {path, path.replace("\\", "/"), path.replace("/", "\\")}
 
 
+def _path_separator_for_style(path: str) -> str:
+    return "\\" if "\\" in path and "/" not in path else "/"
+
+
 def _join_path_preserving_style(base: str, relative: str) -> str:
     if not relative:
         return base
-    if "/" in base and "\\" not in base:
-        return f"{base.rstrip('/')}/{relative}"
-    return str(Path(base) / relative)
+    separator = _path_separator_for_style(base)
+    normalized_relative = relative.replace("\\" if separator == "/" else "/", separator).lstrip("/\\")
+    stripped_base = base.rstrip("/\\")
+    return f"{stripped_base}{separator}{normalized_relative}"
 
 
 def _sanitize_error(error: Exception, runtime: "ToolRuntime[ContextT, ThreadState] | None" = None) -> str:
@@ -416,7 +421,10 @@ def replace_virtual_path(path: str, thread_data: ThreadDataState | None) -> str:
             return actual_base
         if path.startswith(f"{virtual_base}/"):
             rest = path[len(virtual_base) :].lstrip("/")
-            return _join_path_preserving_style(actual_base, rest)
+            result = _join_path_preserving_style(actual_base, rest)
+            if path.endswith("/") and not result.endswith(("/", "\\")):
+                result += _path_separator_for_style(actual_base)
+            return result
 
     return path
 
@@ -801,7 +809,8 @@ def sandbox_from_runtime(runtime: ToolRuntime[ContextT, ThreadState] | None = No
     if sandbox is None:
         raise SandboxNotFoundError(f"Sandbox with ID '{sandbox_id}' not found", sandbox_id=sandbox_id)
 
-    runtime.context["sandbox_id"] = sandbox_id  # Ensure sandbox_id is in context for downstream use
+    if runtime.context is not None:
+        runtime.context["sandbox_id"] = sandbox_id  # Ensure sandbox_id is in context for downstream use
     return sandbox
 
 
@@ -836,7 +845,8 @@ def ensure_sandbox_initialized(runtime: ToolRuntime[ContextT, ThreadState] | Non
         if sandbox_id is not None:
             sandbox = get_sandbox_provider().get(sandbox_id)
             if sandbox is not None:
-                runtime.context["sandbox_id"] = sandbox_id  # Ensure sandbox_id is in context for releasing in after_agent
+                if runtime.context is not None:
+                    runtime.context["sandbox_id"] = sandbox_id  # Ensure sandbox_id is in context for releasing in after_agent
                 return sandbox
             # Sandbox was released, fall through to acquire new one
 
@@ -858,7 +868,8 @@ def ensure_sandbox_initialized(runtime: ToolRuntime[ContextT, ThreadState] | Non
     if sandbox is None:
         raise SandboxNotFoundError("Sandbox not found after acquisition", sandbox_id=sandbox_id)
 
-    runtime.context["sandbox_id"] = sandbox_id  # Ensure sandbox_id is in context for releasing in after_agent
+    if runtime.context is not None:
+        runtime.context["sandbox_id"] = sandbox_id  # Ensure sandbox_id is in context for releasing in after_agent
     return sandbox
 
 
